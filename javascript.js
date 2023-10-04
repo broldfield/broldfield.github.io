@@ -1,4 +1,6 @@
 const playBtn = document.getElementById("playGame");
+const player1P = document.getElementById("player1");
+const player2P = document.getElementById("player2");
 
 const gameBoard = (() => {
   let board = [
@@ -33,7 +35,7 @@ const gameBoard = (() => {
           return element == value;
         })
       ) {
-        return 1;
+        return true;
       }
     }
 
@@ -47,20 +49,20 @@ const gameBoard = (() => {
           return element == value;
         })
       ) {
-        return 1;
+        return true;
       }
     }
 
     //Check Diagonals
     if (board[0][0] == value && board[1][1] == value && board[2][2] == value) {
-      return 1;
+      return true;
     }
 
     if (board[0][2] == value && board[1][1] == value && board[2][0] == value) {
-      return 1;
+      return true;
     }
 
-    return 0;
+    return false;
   };
 
   return { add, checkWin, reset, getBoard };
@@ -96,8 +98,6 @@ const playerX = playerFactory("X");
 const playerO = playerFactory("O");
 playerX.currentPlayer = true;
 
-// gameBoard.add("X", 0, 2);
-
 const displayController = (() => {
   const rows = [];
   rows[0] = document.getElementById("row1").getElementsByTagName("div");
@@ -112,7 +112,6 @@ const displayController = (() => {
         board[i][j] == "Z"
           ? (rows[i][j].textContent = "")
           : (rows[i][j].textContent = board[i][j]);
-        // rows[i][j].textContent = board[i][j];
       }
     }
   };
@@ -124,16 +123,25 @@ const displayController = (() => {
         (e) => {
           if (playerX.currentPlayer) {
             gameBoard.add(playerX.getPlayerType(), rowIndex, colIndex);
-            // console.log(rowIndex, colIndex, playerX.getPlayerType());
-            // console.log("X");
             console.log(gameBoard.getBoard());
+            if (gameBoard.checkWin("X")) {
+              console.log("win");
+              playerX.addWins();
+              player1P.textContent = `Player 1: ${playerX.getWins()}`;
+            }
           }
           if (playerO.currentPlayer) {
             gameBoard.add(playerO.getPlayerType(), rowIndex, colIndex);
-            console.log("O");
+            if (gameBoard.checkWin("O")) {
+              console.log("win");
+              playerO.addWins();
+              player2P.textContent = `Player 2: ${playerO.getWins()}`;
+            }
           }
           e.stopPropagation();
           updateBoard();
+          playerO.currentPlayer = !playerO.currentPlayer;
+          playerX.currentPlayer = !playerX.currentPlayer;
         },
         false
       );
@@ -151,13 +159,6 @@ const playGame = () => {
 
 playBtn.addEventListener("click", () => {
   playGame();
-  console.log("Clicked");
 }),
   false;
 
-// console.log(gameBoard.getBoard());
-
-// console.log(`X: ${gameBoard.checkWin("X")}`);
-// console.log(`Y: ${gameBoard.checkWin("Y")}`);
-
-// gameBoard.reset();
