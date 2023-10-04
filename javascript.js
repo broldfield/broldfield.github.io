@@ -161,4 +161,3 @@ playBtn.addEventListener("click", () => {
   playGame();
 }),
   false;
-
